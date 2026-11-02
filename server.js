@@ -455,16 +455,4 @@ app.get('/api/resmi-rota', async (c) => {
 });
 
 
-export default app;
-
-
-if (typeof process !== 'undefined' && process.versions && process.versions.node) {
-  const dynamicRequire = eval('require');
-  try {
-    const { serve } = dynamicRequire('@hono/node-server');
-    const PORT = process.env.PORT || 3000;
-    serve({ fetch: app.fetch, port: PORT }, (info) => {
-      console.log(`\n  🚌  kactakalkar web (Node.js)\n  ➜  http://localhost:${info.port}\n`);
-    });
-  } catch (e) { console.error("Node sunucusu başlatılamadı:", e.message); }
-}
+module.exports = app;
