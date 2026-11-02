@@ -449,4 +449,33 @@ app.get('/api/resmi-rota', async (c) => {
   } catch (error) { return c.json({ error: 'İETT rota servisine ulaşılamadı.' }, 500); }
 });
 
+app.get('/api/debug/soap', async (c) => {
+  const url = 'https://api.ibb.gov.tr/iett/UlasimAnaVeri/HatDurakGuzergah.asmx';
+  const env = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <GetHat_json xmlns="http://tempuri.org/">
+      <HatKodu>KM11</HatKodu>
+    </GetHat_json>
+  </soap:Body>
+</soap:Envelope>`;
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'text/xml; charset=utf-8', 
+        'SOAPAction': '"http://tempuri.org/GetHat_json"' 
+      },
+      body: env
+    });
+    const text = await res.text();
+    return c.json({ 
+      durumKodu: res.status, 
+      gelenYanit: text.slice(0, 500) 
+    });
+  } catch (e) {
+    return c.json({ hata: e.message });
+  }
+});
+
 export default app;
