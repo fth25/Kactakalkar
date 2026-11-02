@@ -1,9 +1,29 @@
+#!/usr/bin/env node
 'use strict';
 
-const _memoryCache = new Map();
+require('dotenv').config();
 
+
+const BASE_HAT_DURAK    = process.env.BASE_HAT_DURAK || 'https://api.ibb.gov.tr/iett/UlasimAnaVeri/HatDurakGuzergah.asmx';
+const BASE_DUYURU       = process.env.BASE_DUYURU || 'https://api.ibb.gov.tr/iett/UlasimDinamikVeri/Duyurular.asmx';
+const BASE_FILO         = process.env.BASE_FILO || 'https://api.ibb.gov.tr/iett/FiloDurum/SeferGerceklesme.asmx';
+const BASE_IBB          = process.env.BASE_IBB || 'https://api.ibb.gov.tr/iett/ibb/ibb.asmx';
+const BASE_AKARYAKIT    = process.env.BASE_AKARYAKIT || 'https://api.ibb.gov.tr/iett/AracAnaVeri/AracOzellik.asmx';
+const BASE_IBB360       = process.env.BASE_IBB360 || 'https://api.ibb.gov.tr/iett/ibb/ibb360.asmx';
+const BASE_PLANLANAN_SEFER = process.env.BASE_PLANLANAN_SEFER || 'https://api.ibb.gov.tr/iett/UlasimAnaVeri/PlanlananSeferSaati.asmx';
+
+const IETT_IST_BASE         = process.env.IETT_IST_BASE || 'https://iett.istanbul/tr/RouteStation';
+const IETT_IST_STATION_INFO = process.env.IETT_IST_STATION_INFO || 'https://iett.istanbul/tr/RouteStation/GetStationInfo';
+const IETT_IST_BY_STATION   = process.env.IETT_IST_BY_STATION || 'https://iett.istanbul/tr/RouteStationAgent/GetRouteByStation';
+const IETT_IST_SCHEDULE     = process.env.IETT_IST_SCHEDULE || 'https://iett.istanbul/tr/RouteStation/GetScheduledDepartureTimes';
+
+const TEMPURI_NS = process.env.TEMPURI_NS || 'http://tempuri.org/';
+const UA = process.env.USER_AGENT || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
+const _memoryCache = new Map();
 const _filoCallLog = [];
 const FILO_LIMIT_PER_HOUR = 80;
+
 function trackFiloCall() {
   const now = Date.now() / 1000;
   _filoCallLog.push(now);
@@ -15,38 +35,6 @@ function trackFiloCall() {
 let _tumFiloCache = null;
 let _tumFiloCacheTs = 0;
 const TUM_FILO_CACHE_TTL = 60 * 1000;
-
-async function _tumFiloVerisiniAl() {
-  if (_tumFiloCache && Date.now() - _tumFiloCacheTs < TUM_FILO_CACHE_TTL) {
-    return _tumFiloCache;
-  }
-  if (trackFiloCall() > FILO_LIMIT_PER_HOUR) {
-    return _tumFiloCache || [];
-  }
-  try {
-    const env = buildSoapEnvelope('GetFiloAracKonum_json', {});
-    const res = await fetch(BASE_FILO, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/xml; charset=utf-8', 'SOAPAction': `"${TEMPURI_NS}GetFiloAracKonum_json"`, 'User-Agent': UA },
-      body: env
-    });
-    if (!res.ok) return _tumFiloCache || [];
-    const xml = await res.text();
-    const text = extractSoapResult(xml, 'GetFiloAracKonum_json');
-    if (!text) return _tumFiloCache || [];
-    const parsed = convertDotnetDates(JSON.parse(text));
-    _tumFiloCache = Array.isArray(parsed) ? parsed : [parsed];
-    _tumFiloCacheTs = Date.now();
-    return _tumFiloCache;
-  } catch (e) {
-    return _tumFiloCache || [];
-  }
-}
-
-
-
-const TEMPURI_NS = 'http://tempuri.org/';
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
 function cacheRead(file, ttl) { const record = _memoryCache.get(file); if (!record) return [null, null]; const age = Date.now() / 1000 - record.ts; return age > ttl ? [null, age] : [record.data, age]; }
 function cacheWrite(file, data) { _memoryCache.set(file, { ts: Date.now() / 1000, data }); }
@@ -103,6 +91,29 @@ async function istGet(pathname, params, refererHat, raw = false) {
   if (params) url = `${url}?${new URLSearchParams(params).toString()}`;
   const h = { 'accept': '*/*', 'accept-language': 'tr-TR,tr;q=0.9', 'x-requested-with': 'XMLHttpRequest', 'user-agent': UA, 'referer': refererHat ? `https://iett.istanbul/RouteDetail?hkod=${refererHat}` : 'https://iett.istanbul/' };
   try { const r = await fetch(url, { headers: h }); if (!r.ok) return null; return raw ? await r.text() : await r.json(); } catch (e) { return null; }
+}
+
+async function _tumFiloVerisiniAl() {
+  if (_tumFiloCache && Date.now() - _tumFiloCacheTs < TUM_FILO_CACHE_TTL) return _tumFiloCache;
+  if (trackFiloCall() > FILO_LIMIT_PER_HOUR) return _tumFiloCache || [];
+  try {
+    const env = buildSoapEnvelope('GetFiloAracKonum_json', {});
+    const res = await fetch(BASE_FILO, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/xml; charset=utf-8', 'SOAPAction': `"${TEMPURI_NS}GetFiloAracKonum_json"`, 'User-Agent': UA },
+      body: env
+    });
+    if (!res.ok) return _tumFiloCache || [];
+    const xml = await res.text();
+    const text = extractSoapResult(xml, 'GetFiloAracKonum_json');
+    if (!text) return _tumFiloCache || [];
+    const parsed = convertDotnetDates(JSON.parse(text));
+    _tumFiloCache = Array.isArray(parsed) ? parsed : [parsed];
+    _tumFiloCacheTs = Date.now();
+    return _tumFiloCache;
+  } catch (e) {
+    return _tumFiloCache || [];
+  }
 }
 
 async function durakDuyurulariHtml(dk) {
@@ -220,15 +231,6 @@ function haversineKm(lat1, lng1, lat2, lng2) { const R = 6371; const dLat = (lat
 
 const _hizCache = new Map(); const _aracKonumCache = new Map(); const ARAC_CACHE_TTL = 20 * 1000; const _mesafeGecmisi = new Map();
 
-function _aracUzaklasiyorMu(kapi, yeniMesafe) {
-  if (!kapi || yeniMesafe == null) return false;
-  if (_mesafeGecmisi.size > 5000) { const cutoff = Date.now() - 300_000; for (const [k, v] of _mesafeGecmisi) { if (!v || v.ts < cutoff) _mesafeGecmisi.delete(k); } }
-  const prev = _mesafeGecmisi.get(kapi);
-  const ayniSayi = (prev && Math.abs(prev.mesafe_km - yeniMesafe) < 0.05) ? (prev.ayniSayi || 0) + 1 : 0;
-  _mesafeGecmisi.set(kapi, { mesafe_km: yeniMesafe, ts: Date.now(), ayniSayi });
-  if (!prev) return false; if (Date.now() - prev.ts > 180000) return false; if (yeniMesafe > prev.mesafe_km * 1.05) return true; if (ayniSayi >= 2 && yeniMesafe > 1.0) return true; return false;
-}
-
 function _tsParse(s) { const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/); if (!m) return null; return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]).getTime(); }
 function _hizCacheTemizle() { const now = Date.now(); for (const [kapi, v] of _hizCache) { if (now - v.ts > 600_000) _hizCache.delete(kapi); } }
 
@@ -278,25 +280,29 @@ async function stationArrivalsWithDistance(dk, durakLat, durakLng, sessiz = true
   return sonuc.sort((a, b) => (a.kalan_dk ?? 9999) - (b.kalan_dk ?? 9999));
 }
 
-
 async function hatAktifKapilar(hk) {
-  if (trackFiloCall() > FILO_LIMIT_PER_HOUR) return [];
-  let d = await getJson(BASE_FILO, 'GetHatOtoKonum_json', { HatKodu: hk }, { isFilo: true, quiet: true });
-  if (!d) d = await getJson(BASE_FILO, 'GetHatOtoKonum_json', { HatNo: hk }, { isFilo: true, quiet: true });
-  if (!d) return [];
-  const rows = Array.isArray(d) ? d : [d]; const set = new Set();
-  for (const r of rows) { if (!r || typeof r !== 'object') continue; const k = r.KapiNo ?? r.KAPINO ?? r.kapino ?? r.Kapi_No ?? r.KAPI_NO ?? ''; const s = String(k).trim(); if (s) set.add(s); }
+  const tumFilo = await _tumFiloVerisiniAl();
+  const set = new Set();
+  for (const r of tumFilo) {
+    if (!r || typeof r !== 'object') continue;
+    const hatKodu = String(r.HatKodu ?? r.HATKODU ?? r.HatNo ?? '').trim().toUpperCase();
+    if (hatKodu !== String(hk).toUpperCase()) continue;
+    const k = r.KapiNo ?? r.KAPINO ?? r.kapino ?? r.Kapi_No ?? r.KAPI_NO ?? '';
+    const s = String(k).trim(); if (s) set.add(s);
+  }
   return [...set].sort();
 }
 
 async function hatAktifAraclarKonumlu(hk) {
   const _cached = _aracKonumCache.get(hk); if (_cached && Date.now() - _cached.ts < ARAC_CACHE_TTL) return _cached.data;
-  if (trackFiloCall() > FILO_LIMIT_PER_HOUR) return _cached ? _cached.data : [];
-  let d = await getJson(BASE_FILO, 'GetHatOtoKonum_json', { HatKodu: hk }, { isFilo: true, quiet: true });
-  if (!d) d = await getJson(BASE_FILO, 'GetHatOtoKonum_json', { HatNo: hk }, { isFilo: true, quiet: true });
-  if (!d || (Array.isArray(d) && !d.length)) { if (_cached) return _cached.data; return []; }
-  const rows = Array.isArray(d) ? d : [d]; const out = []; const gorulen = new Set();
-
+  const tumFilo = await _tumFiloVerisiniAl();
+  const rows = tumFilo.filter(r => {
+    if (!r || typeof r !== 'object') return false;
+    const hatKodu = String(r.HatKodu ?? r.HATKODU ?? r.HatNo ?? '').trim().toUpperCase();
+    return !hatKodu || hatKodu === String(hk).toUpperCase();
+  });
+  if (!rows.length) { if (_cached) return _cached.data; return []; }
+  const out = []; const gorulen = new Set();
   for (const r of rows) {
     let kapi = ''; for (const f of ['KapiNo','KAPINO','kapino','Kapi_No','KAPI_NO']) { if (r[f] != null && String(r[f]).trim()) { kapi = String(r[f]).trim(); break; } }
     if (!kapi) { for (const [k, v] of Object.entries(r)) { if (k.toUpperCase().includes('KAPI') && String(v).trim()) { kapi = String(v).trim(); break; } } }
@@ -306,15 +312,12 @@ async function hatAktifAraclarKonumlu(hk) {
     const hatKodu = String(r.HatKodu ?? r.HATKODU ?? r.HatNo ?? '').trim(); const guzergahkodu = String(r.guzergahkodu ?? r.GUZERGAHKODU ?? r.GuzergahKodu ?? '').trim();
     const yakinDurakKodu = String(r.yakinDurakKodu ?? r.YakinDurakKodu ?? r.YAKIN_DURAK_KODU ?? '').trim();
     let hiz = parseFloat(r.Hiz ?? r.HIZ ?? r.hiz ?? 0);
-   if (!hiz || hiz === 0) { 
-  const tsRaw = String(r.son_konum_zamani ?? r.SonKonumZamani ?? r.SON_KONUM_ZAMANI ?? r.Tarih ?? r.SAAT ?? r.Saat ?? '').trim(); 
-  let ts = _tsParse(tsRaw);
-  if (!ts && /^\d{1,2}:\d{2}:\d{2}$/.test(tsRaw)) {
-    const bugun = new Date().toISOString().slice(0, 10);
-    ts = _tsParse(`${bugun} ${tsRaw}`);
-  }
-  hiz = _konumdanHizHesapla(kapi, lat, lng, ts); 
-}
+    if (!hiz || hiz === 0) { 
+      const tsRaw = String(r.son_konum_zamani ?? r.SonKonumZamani ?? r.SON_KONUM_ZAMANI ?? r.Tarih ?? r.SAAT ?? r.Saat ?? '').trim(); 
+      let ts = _tsParse(tsRaw);
+      if (!ts && /^\d{1,2}:\d{2}:\d{2}$/.test(tsRaw)) { const bugun = new Date().toISOString().slice(0, 10); ts = _tsParse(`${bugun} ${tsRaw}`); }
+      hiz = _konumdanHizHesapla(kapi, lat, lng, ts); 
+    }
     if (_hizCache.size % 100 === 0) _hizCacheTemizle();
     out.push({ kapi, hat: hatKodu || hk, guzergahkodu, yakinDurakKodu, lat: isFinite(lat) ? lat : null, lng: isFinite(lng) ? lng : null, hiz: isFinite(hiz) ? hiz : 0, yon, saat });
   }
@@ -331,7 +334,7 @@ async function hatlarIcinKapilar(hatlar, sessiz = false) {
   return out;
 }
 
-async function durakAdiBul(dk) { const d = await getJson(BASE_HAT_DURAK, 'GetDurak_json', { DurakKodu: dk }, { quiet: true }); if (Array.isArray(d) && d.length) return String(d[0].SDURAKADI || '').trim().toUpperCase(); if (d && typeof d === 'object') return String(d.SDURAKADI || '').trim().toUpperCase(); return null; }
+async function durakAdiBul(dk) { const d = await getJson(BASE_HAT_DURAK, 'GetDurak_json', { DurakKodu: dk }); if (Array.isArray(d) && d.length) return String(d[0].SDURAKADI || '').trim().toUpperCase(); if (d && typeof d === 'object') return String(d.SDURAKADI || '').trim().toUpperCase(); return null; }
 function kapiEsles(k, a) { for (const f of ['KapiNo','KAPINO','kapino','Kapi_No','KAPI_NO']) { if (f in k && String(k[f] ?? '').trim().toUpperCase() === String(a).trim().toUpperCase()) return true; } for (const [kk, vv] of Object.entries(k)) { if (kk.toUpperCase().includes('KAPI') && String(vv).trim().toUpperCase() === String(a).trim().toUpperCase()) return true; } return false; }
 
 async function durakaGelenDeparlar(dk, zorla = false) {
@@ -352,7 +355,7 @@ async function getAracOzellikleri(kapiNo = null) {
     let sonuc = null;
     const cek = async (method) => {
       try {
-        const d = await getJson(BASE_AKARYAKIT, method, { KapiNo: kapiNo }, { quiet: true });
+        const d = await getJson(BASE_AKARYAKIT, method, { KapiNo: kapiNo });
         const rows = Array.isArray(d) ? d : (d ? [d] : []);
         for (const r of rows) {
           const kapi = String(r.KapiNo || r.KAPINO || r.Kapi_No || '').trim();
@@ -370,7 +373,7 @@ async function getAracOzellikleri(kapiNo = null) {
   if (_aracOzellikCache && Date.now() - _aracOzellikTs < 24 * 60 * 60 * 1000) return _aracOzellikCache;
   const map = {};
   try {
-    const d1 = await getJson(BASE_AKARYAKIT, 'GetAracOzellikleriIETT_json', {}, { quiet: true });
+    const d1 = await getJson(BASE_AKARYAKIT, 'GetAracOzellikleriIETT_json', {});
     const rows1 = Array.isArray(d1) ? d1 : (d1 ? [d1] : []);
     for (const r of rows1) {
       const kapi = String(r.KapiNo || r.KAPINO || r.Kapi_No || '').trim(); if (!kapi) continue;
@@ -382,7 +385,7 @@ async function getAracOzellikleri(kapiNo = null) {
 }
 
 let _tumDurakCache = null; let _tumDurakTs = 0; let _tumDurakPromise = null;
-const TUM_DURAK_TTL = 6 * 60 * 60 * 1000; // 6 saat
+const TUM_DURAK_TTL = 6 * 60 * 60 * 1000;
 
 async function _tumDuraklariYukle() {
   if (_tumDurakCache && _tumDurakCache.length && Date.now() - _tumDurakTs < TUM_DURAK_TTL) return _tumDurakCache;
@@ -390,8 +393,8 @@ async function _tumDuraklariYukle() {
   _tumDurakPromise = (async () => {
     try {
       let liste = [];
-      try { const d = await getJson(BASE_HAT_DURAK, 'GetDurak_json', {}, { quiet: true }); liste = Array.isArray(d) ? d : (d ? [d] : []); } catch (e) {}
-      if (!liste.length) { try { const d = await getJson(BASE_HAT_DURAK, 'GetDurak_json', { DurakKodu: '' }, { quiet: true }); liste = Array.isArray(d) ? d : (d ? [d] : []); } catch (e) {} }
+      try { const d = await getJson(BASE_HAT_DURAK, 'GetDurak_json', {}); liste = Array.isArray(d) ? d : (d ? [d] : []); } catch (e) {}
+      if (!liste.length) { try { const d = await getJson(BASE_HAT_DURAK, 'GetDurak_json', { DurakKodu: '' }); liste = Array.isArray(d) ? d : (d ? [d] : []); } catch (e) {} }
       if (liste.length) { _tumDurakCache = liste; _tumDurakTs = Date.now(); }
       return liste;
     } finally { _tumDurakPromise = null; }
@@ -431,7 +434,7 @@ function _duyuruHatiIceriyorMu(duyuru, hk) {
 async function _tumDuyurulariCek() {
   const denemeler = [{ method: 'GetDuyurular_json', params: undefined }, { method: 'GetDuyurular_json', params: {} }, { method: 'GetDuyurular_json', params: { Tarih: '' } }, { method: 'GetDuyurular_json', params: { HatKodu: '' } }, { method: 'GetDuyurular_json', params: { hatKodu: '' } }, { method: 'GetDuyurular', params: {} }];
   for (const d of denemeler) {
-    try { const ham = await getJson(BASE_DUYURU, d.method, d.params, { quiet: true }); const rows = Array.isArray(ham) ? ham : (ham ? [ham] : []); if (rows.length) { return rows; } } catch (e) {}
+    try { const ham = await getJson(BASE_DUYURU, d.method, d.params); const rows = Array.isArray(ham) ? ham : (ham ? [ham] : []); if (rows.length) { return rows; } } catch (e) {}
   }
   return [];
 }
@@ -459,7 +462,7 @@ async function _duraklariGYYdenCek(hk) {
   const adaylar = [{ hat_kodu: hk }, { hatKodu: hk }, { HAT_KODU: hk }, { HatKodu: hk }];
   for (const p of adaylar) {
     try {
-      const detay = await getJson(BASE_IBB, 'DurakDetay_GYY', p, { quiet: true });
+      const detay = await getJson(BASE_IBB, 'DurakDetay_GYY', p);
       const rows = Array.isArray(detay) ? detay : (detay ? [detay] : []); if (!rows.length) continue;
       const yonMap = {};
       for (const r of rows) {
@@ -479,15 +482,15 @@ function _operatorTip(kapi) { const k = String(kapi || '').trim().toUpperCase();
 function _saatDk(hhmm) { const m = String(hhmm || '').match(/^(\d{1,2}):(\d{2})$/); if (!m) return -1; return parseInt(m[1], 10) * 60 + parseInt(m[2], 10); }
 
 let _tumHatlarCache = null; let _tumHatlarTs = 0; let _tumHatlarPromise = null;
-const HATLAR_TTL = 12 * 60 * 60 * 1000; // 12 saat
+const HATLAR_TTL = 12 * 60 * 60 * 1000;
 
 async function _tumHatlar() {
   if (_tumHatlarCache && Date.now() - _tumHatlarTs < HATLAR_TTL) return _tumHatlarCache;
   if (_tumHatlarPromise) return _tumHatlarPromise;
   _tumHatlarPromise = (async () => {
     try { 
-      let d = await getJson(BASE_HAT_DURAK, 'GetHat_json', { HatKodu: '' }, { quiet: true }); 
-      if (!d) d = await getJson(BASE_HAT_DURAK, 'GetHat_json', {}, { quiet: true });
+      let d = await getJson(BASE_HAT_DURAK, 'GetHat_json', { HatKodu: '' }); 
+      if (!d) d = await getJson(BASE_HAT_DURAK, 'GetHat_json', {});
       _tumHatlarCache = Array.isArray(d) ? d : (d ? [d] : []); 
       _tumHatlarTs = Date.now(); 
     }

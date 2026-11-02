@@ -1,20 +1,9 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-
-const CACHE_DIR = path.join(process.env.HOME || process.env.USERPROFILE, '.iett_cache');
-const HAT_INDEX_FILE   = path.join(CACHE_DIR, 'ai_hat_index.json');
-const DURAK_INDEX_FILE = path.join(CACHE_DIR, 'ai_durak_index.json');
-const DURAK_TOKEN_FILE = path.join(CACHE_DIR, 'ai_durak_token.json');
-
 let _hatlar = null;
 let _duraklar = null;
 let _durakToken = null;
 
-/* ============================================================
-   TÜRKÇE NORMALİZASYON — İ/I, Ş/Ğ/Ü/Ö/Ç ve aksan tam çözüm
-   ============================================================ */
 const TR_MAP = {
   'İ':'i','I':'i','ı':'i','i':'i',
   'Ş':'s','ş':'s',
@@ -37,72 +26,41 @@ function _tokenize(s) {
   return _norm(s).split(/\s+/).filter(Boolean);
 }
 
-function _yukleDosya(f) {
-  if (!fs.existsSync(f)) return null;
-  try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return null; }
-}
-
-function _kaydetDosya(f, data) {
-  try {
-    fs.mkdirSync(path.dirname(f), { recursive: true });
-    fs.writeFileSync(f, JSON.stringify(data));
-  } catch (e) { console.warn('[bilgi] kayıt hatası:', e.message); }
-}
-
-/* ============================================================
-   HAZIRLA
-   ============================================================ */
 async function hazirla(iett) {
   if (_hatlar && _duraklar && _durakToken) {
     return { hat: _hatlar.size, durak: _duraklar.size };
   }
 
-  /* --- HATLAR --- */
-  let hatRaw = _yukleDosya(HAT_INDEX_FILE);
-  if (!hatRaw || !hatRaw.length) {
-    console.log('[bilgi] hat index yükleniyor...');
-    const d = await iett.getJson(iett.BASE_HAT_DURAK, 'GetHat_json', { HatKodu: '' });
+  if (!_hatlar) {
+    const d = await iett.getJson(iett.BASE_HAT_DURAK, 'GetHat_json', { HatKodu: '' }, { quiet: true });
     const rows = Array.isArray(d) ? d : (d ? [d] : []);
-    hatRaw = rows.map(r => ({
+    const hatRaw = rows.map(r => ({
       kod: String(r.SHATKODU || '').trim().toUpperCase(),
       ad: String(r.SHATADI || '').trim(),
       tarife: String(r.TARIFE || '').trim(),
       uzunluk: Number(r.HAT_UZUNLUGU || 0),
       sure: Number(r.SEFER_SURESI || 0),
     })).filter(h => h.kod);
-    if (hatRaw.length) _kaydetDosya(HAT_INDEX_FILE, hatRaw);
-    console.log(`[bilgi] ${hatRaw.length} hat yüklendi`);
+    _hatlar = new Map(hatRaw.map(h => [h.kod, h]));
   }
-  _hatlar = new Map(hatRaw.map(h => [h.kod, h]));
 
-  /* --- DURAKLAR --- */
-  let durakRaw = _yukleDosya(DURAK_INDEX_FILE);
-  if (!durakRaw || !durakRaw.length) {
-    console.log('[bilgi] durak index yükleniyor (biraz sürebilir)...');
-    let d = await iett.getJson(iett.BASE_HAT_DURAK, 'GetDurak_json', {});
+  if (!_duraklar) {
+    let d = await iett.getJson(iett.BASE_HAT_DURAK, 'GetDurak_json', {}, { quiet: true });
     let rows = Array.isArray(d) ? d : (d ? [d] : []);
-
     if (!rows.length) {
-      d = await iett.getJson(iett.BASE_HAT_DURAK, 'GetDurak_json', { DurakKodu: '' });
+      d = await iett.getJson(iett.BASE_HAT_DURAK, 'GetDurak_json', { DurakKodu: '' }, { quiet: true });
       rows = Array.isArray(d) ? d : (d ? [d] : []);
     }
-
-    durakRaw = rows.map(r => ({
+    const durakRaw = rows.map(r => ({
       kod: String(r.SDURAKKODU || r.sDurakKodu || '').trim(),
       ad: String(r.SDURAKADI || r.sDurakAdi || '').trim(),
       ilce: String(r.ILCEADI || '').trim(),
       yon: String(r.SYON || '').trim(),
     })).filter(x => x.kod && x.ad);
-
-    if (durakRaw.length) _kaydetDosya(DURAK_INDEX_FILE, durakRaw);
-    console.log(`[bilgi] ${durakRaw.length} durak yüklendi`);
+    _duraklar = new Map(durakRaw.map(x => [x.kod, x]));
   }
-  _duraklar = new Map(durakRaw.map(x => [x.kod, x]));
 
-  /* --- TOKEN INDEX --- */
-  let tokenRaw = _yukleDosya(DURAK_TOKEN_FILE);
-  if (!tokenRaw || tokenRaw.surum !== durakRaw.length) {
-    console.log('[bilgi] token index kuruluyor...');
+  if (!_durakToken) {
     const t = {};
     for (const d of _duraklar.values()) {
       const toks = new Set(_tokenize(d.ad));
@@ -111,13 +69,10 @@ async function hazirla(iett) {
         t[tok].push(d.kod);
       }
     }
-    tokenRaw = { surum: durakRaw.length, index: t };
-    _kaydetDosya(DURAK_TOKEN_FILE, tokenRaw);
-    console.log(`[bilgi] ${Object.keys(t).length} token indexlendi`);
-  }
-  _durakToken = new Map();
-  for (const [tok, kodlar] of Object.entries(tokenRaw.index || {})) {
-    _durakToken.set(tok, new Set(kodlar));
+    _durakToken = new Map();
+    for (const [tok, kodlar] of Object.entries(t)) {
+      _durakToken.set(tok, new Set(kodlar));
+    }
   }
 
   return { hat: _hatlar.size, durak: _duraklar.size };
@@ -141,16 +96,12 @@ function hatBul(metin) {
   return bulunan;
 }
 
-/* ============================================================
-   DURAK ARA — Token index + prefix + cümle + ilçe bonusu
-   ============================================================ */
 function durakAra(metin, limit = 30) {
   if (!_duraklar || !_durakToken) return [];
   const qTokens = _tokenize(metin);
   if (!qTokens.length) return [];
 
   const skor = new Map();
-
   for (const qt of qTokens) {
     const tamSet = _durakToken.get(qt);
     if (tamSet) {
@@ -219,7 +170,6 @@ function durum() {
     hatSayisi: _hatlar ? _hatlar.size : 0,
     durakSayisi: _duraklar ? _duraklar.size : 0,
     tokenSayisi: _durakToken ? _durakToken.size : 0,
-    dosyalar: { hat: HAT_INDEX_FILE, durak: DURAK_INDEX_FILE, token: DURAK_TOKEN_FILE },
   };
 }
 

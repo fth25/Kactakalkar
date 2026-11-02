@@ -455,7 +455,7 @@ app.get('/api/resmi-rota', async (c) => {
 });
 
 
-module.exports = app;
+export default app;
 
 
 if (typeof process !== 'undefined' && process.versions && process.versions.node) {
