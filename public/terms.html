@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kullanım Koşulları — kactakalkar</title>
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="stylesheet" href="style.css?v=25">
+<script>
+(function(){ try { var t = localStorage.getItem('kactakalkar_tema'); if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); } catch(e){} })();
+</script>
+<style>
+  .legal-wrap { max-width: 820px; margin: 0 auto; padding: 40px 24px 80px; }
+  .legal-hero { text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .legal-hero h1 { font-size: 32px; margin: 0 0 8px; background: linear-gradient(135deg, var(--fg), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .legal-hero .meta { color: var(--dim); font-size: 13px; }
+  .legal-badge { display: inline-block; padding: 4px 12px; background: rgba(78,161,255,.1); color: var(--accent); border: 1px solid rgba(78,161,255,.25); border-radius: 99px; font-size: 11px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .legal-wrap h2 { font-size: 18px; margin: 36px 0 12px; color: var(--fg); display: flex; align-items: center; gap: 10px; }
+  .legal-wrap h2::before { content: ''; width: 4px; height: 18px; background: linear-gradient(180deg, var(--accent), var(--accent2)); border-radius: 2px; }
+  .legal-wrap h3 { font-size: 15px; margin: 24px 0 10px; color: var(--fg); font-weight: 700; }
+  .legal-wrap p, .legal-wrap li { font-size: 14px; line-height: 1.75; color: var(--dim); margin: 0 0 12px; }
+  .legal-wrap strong { color: var(--fg); font-weight: 600; }
+  .legal-wrap ul { padding-left: 22px; }
+  .legal-notice { background: rgba(255,200,87,.08); border-left: 3px solid var(--warn); padding: 14px 18px; border-radius: 8px; margin: 20px 0; }
+  .legal-notice.danger { background: rgba(255,92,92,.08); border-left-color: var(--err); }
+  .legal-notice p { margin: 0; color: var(--fg); font-size: 13.5px; }
+  .legal-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 20px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+  .legal-table th { background: var(--card2); padding: 10px 14px; text-align: left; color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--line); }
+  .legal-table td { padding: 10px 14px; border-bottom: 1px solid var(--line); color: var(--fg); }
+  .legal-table td:first-child { font-family: ui-monospace, monospace; font-size: 12px; color: var(--accent); }
+  .legal-table tr:last-child td { border-bottom: none; }
+  .legal-lang-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+  .legal-lang-tabs button { background: var(--card); color: var(--dim); border: 1px solid var(--line); padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .legal-lang-tabs button.active { background: var(--accent); color: #fff; border-color: transparent; }
+  .legal-lang-content { display: none; }
+  .legal-lang-content.active { display: block; }
+  .legal-footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); text-align: center; }
+  .legal-footer a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 13px; }
+  .legal-footer a:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    .legal-wrap { padding: 24px 16px 60px; }
+    .legal-hero h1 { font-size: 24px; }
+    .legal-wrap h2 { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="legal-wrap">
+  <div class="legal-hero">
+    <div class="legal-badge">Kullanım Sözleşmesi</div>
+    <h1>Kullanım Koşulları</h1>
+    <div class="meta">Son güncelleme: 2 Kasım 2026 · Yürürlük tarihi: 2 Kasım 2026</div>
+  </div>
+
+  <div class="legal-lang-tabs">
+    <button type="button" class="active" onclick="switchLang('tr', this)">Türkçe</button>
+    <button type="button" onclick="switchLang('en', this)">English</button>
+  </div>
+
+  <div id="lang-tr" class="legal-lang-content active">
+    <div class="legal-notice danger">
+      <p><strong>Önemli Yasal Uyarı:</strong> kactakalkar; İETT (İstanbul Elektrik Tramvay ve Tünel İşletmeleri) veya İBB (İstanbul Büyükşehir Belediyesi) ile <strong>resmi hiçbir bağı olmayan</strong>, tamamen bağımsız bir açık kaynak projedir. Verilerin doğruluğu ve kesintisiz çalışması <strong>garanti edilmez</strong>.</p>
+    </div>
+
+    <h2>1. Taraflar</h2>
+    <p><strong>Hizmet Sağlayıcı:</strong> kactakalkar açık kaynak projesi<br>
+    <strong>Kullanıcı:</strong> Uygulamayı kullanan gerçek veya tüzel kişi</p>
+    <p>Uygulamayı kullanmaya başladığınız anda bu koşulları kabul etmiş sayılırsınız. Koşulları kabul etmiyorsanız uygulamayı kullanmayınız.</p>
+
+    <h2>2. Hizmetin Tanımı</h2>
+    <p>kactakalkar; İstanbul toplu taşıma bilgilerini (İETT, İBB açık verileri) kullanıcılara sunan <strong>ücretsiz</strong> ve <strong>açık kaynak</strong> bir web uygulamasıdır. Uygulama şunları içerir:</p>
+    <ul>
+      <li>Durak ve hat sorgulama</li>
+      <li>Canlı araç takibi</li>
+      <li>Sefer saati ve durak bilgisi</li>
+      <li>Rota planlama (deneysel)</li>
+      <li>Yapay zeka destekli soru-cevap</li>
+    </ul>
+
+    <h2>3. Kullanıcının Yükümlülükleri</h2>
+    <p>Kullanıcı aşağıdakileri kabul eder:</p>
+    <ul>
+      <li>Uygulamayı yalnızca <strong>kişisel ve ticari olmayan</strong> amaçlarla kullanmak</li>
+      <li>Sunuculara aşırı yük bindirmemek (rate limitlere uymak)</li>
+      <li>Uygulama üzerinden yasa dışı faaliyette bulunmamak</li>
+      <li>Otomatik bot, scraper veya scraping aracı çalıştırmamak</li>
+      <li>Uygulamayı tersine mühendislikle dağıtmaya çalışmamak (açık kaynak kodu hariç)</li>
+      <li>API'leri ticari bir üründe doğrudan kullanmamak</li>
+    </ul>
+
+    <h2>4. Hizmetin Sunulma Şekli</h2>
+    <p>Uygulama <strong>"olduğu gibi" (as-is)</strong> ve <strong>"mevcut olduğu şekliyle" (as-available)</strong> sunulur. Hizmet Sağlayıcı:</p>
+    <ul>
+      <li>Hizmetin <strong>kesintisiz, hatasız veya güvenli</strong> olacağını</li>
+      <li>Verilerin <strong>doğru, eksiksiz veya güncel</strong> olacağını</li>
+      <li>Belirli bir <strong>amaç için uygun</strong> olacağını</li>
+    </ul>
+    <p>garanti <strong>etmez</strong>.</p>
+
+    <h2>5. Veri Kaynakları, Lisans ve Atıf</h2>
+    <p>Uygulama, verilerini üçüncü taraf açık veri kaynaklarından çeker. İBB ve İETT'ye ait ulaşım verileri, <strong>İBB Açık Veri Portalı</strong> üzerinden <strong>Creative Commons Atıf 4.0 (CC BY 4.0)</strong> lisansı kapsamında alınmaktadır. Bu kaynaklarda:</p>
+    <ul>
+      <li>Gecikmeler olabilir (gerçek zamanlı veriler 15-60 saniye gecikmeli olabilir)</li>
+      <li>Eksik veya hatalı bilgiler yer alabilir</li>
+      <li>Sefer iptalleri/gecikmeleri yansıtılmamış olabilir</li>
+      <li>API'ler haber verilmeksizin değiştirilebilir</li>
+    </ul>
+    <p>Bu nedenle <strong>kritik kararlar için resmi İETT/İBB kaynaklarını kullanın</strong>.</p>
+
+    <h2>6. Fikri Mülkiyet</h2>
+    <ul>
+      <li><strong>Uygulama kodu:</strong> Açık kaynak lisansı altında (MIT-benzeri).</li>
+      <li><strong>Veriler:</strong> İlgili kurumların (İBB, İETT) mülkiyetindedir ve CC BY 4.0 lisansına tabidir.</li>
+      <li><strong>Harita karoları:</strong> OpenStreetMap katkıcıları (ODbL lisansı).</li>
+    </ul>
+
+    <h2>7. Üçüncü Taraf Bağlantılar</h2>
+    <p>Uygulama, Google Maps, İETT sitesi gibi üçüncü taraf sitelere bağlantılar içerebilir. Bu sitelerin içeriğinden veya gizlilik uygulamalarından Hizmet Sağlayıcı sorumlu değildir.</p>
+
+    <h2>8. Sorumluluğun Sınırlandırılması</h2>
+    <p>Hizmet Sağlayıcı, aşağıdaki durumlardan doğan <strong>doğrudan veya dolaylı hiçbir zarardan sorumlu tutulamaz</strong>:</p>
+    <ul>
+      <li>Kaçırılan sefer, otobüs veya aktarma</li>
+      <li>Yanlış/eksik veri sonucu oluşan zarar</li>
+      <li>Uygulama kesintisi veya hatası</li>
+      <li>Üçüncü taraf API'lerinin çalışmaması</li>
+      <li>Veri kaybı</li>
+      <li>Kullanıcının uygulamaya güvenerek yaptığı işlemler</li>
+    </ul>
+
+    <h2>9. Tazminat</h2>
+    <p>Kullanıcı, uygulamayı hukuka aykırı şekilde kullanması sonucu doğacak tüm zarar, ziyan ve üçüncü taraf taleplerinden Hizmet Sağlayıcı'yı tazmin etmeyi kabul eder.</p>
+
+    <h2>10. Fesih</h2>
+    <p>Hizmet Sağlayıcı, herhangi bir bildirimde bulunmaksızın hizmeti kısmen veya tamamen durdurabilir. Kullanıcının bu durumda herhangi bir talep hakkı yoktur.</p>
+
+    <h2>11. Mücbir Sebepler</h2>
+    <p>Doğal afet, savaş, siber saldırı, ülke çapında internet kesintisi, devlet müdahalesi, pandemi gibi mücbir sebepler nedeniyle hizmetin aksamasından Hizmet Sağlayıcı sorumlu tutulamaz.</p>
+
+    <h2>12. Değişiklikler</h2>
+    <p>Hizmet Sağlayıcı bu koşulları dilediği zaman değiştirebilir. Değişiklikler bu sayfada yayınlandığı anda yürürlüğe girer.</p>
+
+    <h2>13. Uygulanacak Hukuk ve Yetkili Mahkeme</h2>
+    <p>Bu sözleşme <strong>Türkiye Cumhuriyeti kanunlarına</strong> tabidir. Uyuşmazlıklarda <strong>İstanbul (Çağlayan) Adliyesi</strong> yetkilidir.</p>
+
+    <h2>14. Bölünebilirlik</h2>
+    <p>Bu sözleşmenin herhangi bir hükmünün geçersiz sayılması, diğer hükümlerin geçerliliğini etkilemez.</p>
+
+    <h2>15. İletişim</h2>
+    <p>Sorularınız için GitHub deposu üzerinden <strong>issue</strong> açabilirsiniz.</p>
+  </div>
+
+  <div id="lang-en" class="legal-lang-content">
+    <div class="legal-notice danger">
+      <p><strong>Important Legal Disclaimer:</strong> kactakalkar is a fully independent open-source project with <strong>no official affiliation</strong> with İETT or İBB. Data accuracy and service availability are <strong>not guaranteed</strong>.</p>
+    </div>
+
+    <h2>1. Parties</h2>
+    <p><strong>Service Provider:</strong> kactakalkar open-source project<br>
+    <strong>User:</strong> Any real or legal person using the App</p>
+    <p>By using the App, you agree to these Terms. If you do not agree, do not use the App.</p>
+
+    <h2>2. Service Description</h2>
+    <p>kactakalkar is a <strong>free</strong> and <strong>open-source</strong> web application providing Istanbul public transport information. Features include stop/line queries, live vehicle tracking, schedules, route planning, and AI chat.</p>
+
+    <h2>3. User Obligations</h2>
+    <ul>
+      <li>Use the App only for <strong>personal, non-commercial</strong> purposes</li>
+      <li>Respect rate limits; do not overload servers</li>
+      <li>Do not use the App for illegal activities</li>
+      <li>Do not run bots, scrapers, or automated tools</li>
+      <li>Do not redistribute the App as a commercial product</li>
+    </ul>
+
+    <h2>4. Service Delivery</h2>
+    <p>The App is provided <strong>"as-is"</strong> and <strong>"as-available"</strong>. The Service Provider does not warrant uninterrupted, error-free, or secure operation, nor the accuracy, completeness, or timeliness of the data.</p>
+
+    <h2>5. Data Sources, License & Attribution</h2>
+    <p>Data is fetched from third-party open-data sources. Transportation data belonging to İBB and İETT is obtained from the <strong>İBB Open Data Portal</strong> under the <strong>Creative Commons Attribution 4.0 (CC BY 4.0)</strong> license. Real-time data may be delayed (15–60 seconds). <strong>For critical decisions, always consult official İETT/İBB sources.</strong></p>
+
+    <h2>6. Intellectual Property</h2>
+    <ul>
+      <li><strong>App code:</strong> Under open-source license (MIT-like).</li>
+      <li><strong>Data:</strong> Owned by respective institutions (İBB, İETT) and subject to CC BY 4.0.</li>
+      <li><strong>Map tiles:</strong> © OpenStreetMap contributors (ODbL).</li>
+    </ul>
+
+    <h2>7. Third-Party Links</h2>
+    <p>The App may link to third-party sites (Google Maps, İETT). The Service Provider is not responsible for their content or privacy practices.</p>
+
+    <h2>8. Limitation of Liability</h2>
+    <p>The Service Provider shall not be liable for any direct or indirect damages arising from:</p>
+    <ul>
+      <li>Missed trips, buses, or transfers</li>
+      <li>Incorrect/incomplete data</li>
+      <li>App outages or errors</li>
+      <li>Third-party API failures</li>
+      <li>Data loss</li>
+    </ul>
+
+    <h2>9. Indemnification</h2>
+    <p>You agree to indemnify the Service Provider against any claims arising from your unlawful use of the App.</p>
+
+    <h2>10. Termination</h2>
+    <p>The Service Provider may suspend or terminate the service at any time without notice.</p>
+
+    <h2>11. Force Majeure</h2>
+    <p>The Service Provider is not liable for disruptions caused by force majeure events (natural disasters, war, cyberattacks, pandemics, etc.).</p>
+
+    <h2>12. Changes</h2>
+    <p>These Terms may be updated at any time. Changes take effect upon publication on this page.</p>
+
+    <h2>13. Governing Law & Jurisdiction</h2>
+    <p>These Terms are governed by the <strong>laws of the Republic of Türkiye</strong>. Disputes shall be resolved by the <strong>Istanbul (Çağlayan) Courts</strong>.</p>
+
+    <h2>14. Severability</h2>
+    <p>If any provision is held invalid, the remaining provisions remain in full force.</p>
+
+    <h2>15. Contact</h2>
+    <p>For questions, open an <strong>issue</strong> on the GitHub repository.</p>
+  </div>
+
+  <div class="legal-footer">
+    <a href="/">← Ana Sayfaya Dön</a> · <a href="/privacy.html">Gizlilik Politikası</a>
+  </div>
+</div>
+
+<script>
+function switchLang(lang, btn) {
+  document.querySelectorAll('.legal-lang-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.legal-lang-tabs button').forEach(el => el.classList.remove('active'));
+  document.getElementById('lang-' + lang).classList.add('active');
+  btn.classList.add('active');
+  try { localStorage.setItem('legal_lang', lang); } catch(e) {}
+}
+(function() {
+  try {
+    var saved = localStorage.getItem('legal_lang');
+    if (saved === 'en') {
+      const btn = document.querySelectorAll('.legal-lang-tabs button')[1];
+      if (btn) switchLang('en', btn);
+    }
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

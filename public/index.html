@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content" />
+<meta name="theme-color" content="#0a0d14" />
+<title>kactakalkar</title>
+<meta name="description" content="İstanbul toplu taşıması için canlı veri, rota planlayıcı, sefer saatleri, duraklar ve yapay zeka destekli ulaşım uygulaması." />
+<meta name="author" content="kactakalkar" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://kactakalkar.pages.dev/" />
+<meta property="og:title" content="kactakalkar — İstanbul Canlı Ulaşım" />
+<meta property="og:description" content="İstanbul toplu taşıması için canlı veri, rota planlayıcı, sefer saatleri ve duraklar." />
+<meta property="og:image" content="https://kactakalkar.pages.dev/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="kactakalkar Uygulama Görseli" />
+<meta property="og:site_name" content="kactakalkar" />
+<meta property="og:locale" content="tr_TR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@kactakalkar" />
+<meta name="twitter:creator" content="@kactakalkar" />
+<meta name="twitter:url" content="https://kactakalkar.pages.dev/" />
+<meta name="twitter:title" content="kactakalkar — İstanbul Canlı Ulaşım" />
+<meta name="twitter:description" content="İstanbul toplu taşıması için canlı veri, rota planlayıcı, sefer saatleri ve duraklar." />
+<meta name="twitter:image" content="https://kactakalkar.pages.dev/og-image.png" />
+<meta name="apple-mobile-web-app-title" content="kactakalkar" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="pinterest-rich-pin" content="true" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/svg+xml" href="icon.svg" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="style.css?v=25" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
+<script>
+(function() {
+  try {
+    var t = localStorage.getItem('kactakalkar_tema');
+    if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="btn-geri" id="geriBtn" title="Geri">
+    <span>←</span> Geri
+  </button>
+  <div class="sayfa-baslik" id="sayfaBaslik">—</div>
+  <div class="brand" id="brandLogo" style="cursor: pointer;" title="Ana Sayfaya Dön">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="13" rx="2"/>
+        <path d="M3 11h18"/>
+        <circle cx="7" cy="20" r="1.2"/>
+        <circle cx="17" cy="20" r="1.2"/>
+      </svg>
+    </div>
+    <div>kactakalkar</div>
+  </div>
+  <div class="spacer"></div>
+  
+  <a href="https://github.com/fth25" target="_blank" rel="noopener noreferrer" class="tema-btn" title="GitHub Profilim" aria-label="GitHub Profilim" style="text-decoration: none; color: var(--dim);">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+    </svg>
+  </a>
+
+  <button class="tema-btn" id="temaBtn" title="Tema değiştir" aria-label="Tema değiştir">
+    <svg class="ic-ay" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+    </svg>
+    <svg class="ic-gunes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+  </button>
+  <div class="clock" id="clock"></div>
+</header>
+
+<section id="home-screen">
+  <div class="hero">
+    <h1>kactakalkar</h1>
+    <div class="typewriter-container">
+      <span id="typewriterText" class="typewriter-text"></span>
+      <span class="typewriter-cursor"></span>
+    </div>
+    <p>Benzersiz, Hızlı, Güvenilir Ve Yapay Zeka Destekli Ulaşım Uygulaması</p>
+  </div>
+
+  <div class="menu-grid" id="menuGrid">
+    <div class="menu-card" data-git="yakin">
+      <div class="ic" style="background: linear-gradient(135deg, #16a34a, #4ea1ff);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21s-7-6.5-7-12a7 7 0 1 1 14 0c0 5.5-7 12-7 12z"/>
+          <circle cx="12" cy="9.5" r="2.4"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Yakınımdaki Duraklar</h3>
+      <p>Konumunu kullanarak 600 metre çevrendeki durakları listele.</p>
+    </div>
+
+    <div class="menu-card" data-git="durak">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21s-7-6.5-7-12a7 7 0 1 1 14 0c0 5.5-7 12-7 12z"/>
+          <circle cx="12" cy="9.5" r="2.4"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Durak</h3>
+      <p>Durak bilgisi, durağa gelen hatlar ve yaklaşan araçlar.</p>
+    </div>
+
+    <div class="menu-card" data-git="rota">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6"/>
+          <circle cx="12" cy="12" r="10"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Rota Oluştur</h3>
+      <p>Nereden nereye gideceğini seç, en iyi aktarmalı güzergahı bul.</p>
+    </div>
+
+    <div class="menu-card" data-git="hat">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="3" width="14" height="12" rx="2"/>
+          <path d="M12 15v6"/>
+          <path d="M8 8h8M8 11h5"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Hat Arama</h3>
+      <p>Arattığınız hat hakkında bilgi alma.</p>
+    </div>
+
+    <div class="menu-card" data-git="filo">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="12" rx="2"/>
+          <path d="M3 11h18"/>
+          <circle cx="7" cy="19.5" r="1.4"/>
+          <circle cx="17" cy="19.5" r="1.4"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Seçili Hatta Canlı Araç Görüntüleme</h3>
+      <p>Belirli bir hatta şu an yolda olan araçları Görüntüleme</p>
+    </div>
+
+    <div class="menu-card" data-git="arac">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="7" width="14" height="12" rx="2"/>
+          <path d="M5 13h14"/>
+          <circle cx="8" cy="20" r="1.4"/>
+          <circle cx="16" cy="20" r="1.4"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Araç</h3>
+      <p>Plaka veya kapı koduyla Araç Sorgulama</p>
+    </div>
+
+    <div class="menu-card" data-git="duyuru">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 16V11a6 6 0 1 0-12 0v5l-2 3h16z"/>
+          <path d="M10 22a2 2 0 0 0 4 0"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Duyurular</h3>
+      <p>Anlık güzergah değişiklikleri ve iptal duyuruları</p>
+    </div>
+
+    <div class="menu-card" data-git="arsiv">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="16" rx="2"/>
+          <path d="M3 10h18"/>
+          <path d="M8 3v4M16 3v4"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Geçmiş Sefer Arama</h3>
+      <p>Geçmiş bir günün tüm seferleri, durum ve kapı bilgisiyle sefer arama</p>
+    </div>
+
+    <div class="menu-card" data-git="populer">
+      <div class="ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 20h16"/>
+          <rect x="6" y="12" width="3" height="6"/>
+          <rect x="11" y="8" width="3" height="10"/>
+          <rect x="16" y="4" width="3" height="14"/>
+        </svg>
+      </div>
+      <div class="arrow">→</div>
+      <h3>Günlük En Çok Kullanılan Hatlar</h3>
+      <p>Seçili günün en çok kullanılan hatları — top 50.</p>
+    </div>
+  </div>
+</section>
+
+<main id="icerik" class="gizli">
+  
+  <section id="tab-yolculuk" class="gizli">
+    <div class="menu-grid" style="margin-top: 10px;">
+      <div class="menu-card" data-git="yakin">
+        <div class="ic" style="background: linear-gradient(135deg, #16a34a, #4ea1ff);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s-7-6.5-7-12a7 7 0 1 1 14 0c0 5.5-7 12-7 12z"/>
+            <circle cx="12" cy="9.5" r="2.4"/>
+          </svg>
+        </div>
+        <div class="arrow">→</div>
+        <h3>Yakınımdaki Duraklar</h3>
+        <p>Konumunu kullanarak 600 metre çevrendeki durakları listele.</p>
+      </div>
+      <div class="menu-card" data-git="durak">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s-7-6.5-7-12a7 7 0 1 1 14 0c0 5.5-7 12-7 12z"/>
+            <circle cx="12" cy="9.5" r="2.4"/>
+          </svg>
+        </div>
+        <div class="arrow">→</div>
+        <h3>Durak</h3>
+        <p>Durak bilgisi, durağa gelen hatlar ve yaklaşan araçlar.</p>
+      </div>
+      <div class="menu-card" data-git="rota">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        </div>
+        <div class="arrow">→</div>
+        <h3>Rota Oluştur</h3>
+        <p>Nereden nereye gideceğini seç, en iyi aktarmalı güzergahı bul.</p>
+      </div>
+      <div class="menu-card" data-git="hat">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="3" width="14" height="12" rx="2"/>
+            <path d="M12 15v6"/>
+            <path d="M8 8h8M8 11h5"/>
+          </svg>
+        </div>
+        <div class="arrow">→</div>
+        <h3>Hat Arama</h3>
+        <p>Arattığınız hat hakkında bilgi alma.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-yakin" class="gizli">
+    <div class="row">
+      <button id="yakinBtn" style="width:100%; padding: 16px; font-size: 15px;">📍 Konumumu Kullan ve Durakları Bul</button>
+    </div>
+    <div id="yakinSonuc"></div>
+  </section>
+
+  <section id="tab-rota" class="gizli">
+    <div class="card">
+      <div class="row" style="margin-bottom: 10px;">
+        <input id="rotaBaslangic" type="text" placeholder="Nereden? (Örn: TUZLA veya 209081)" autocomplete="off" />
+      </div>
+      <div class="row">
+        <input id="rotaBitis" type="text" placeholder="Nereye? (Örn: KARTAL veya 123456)" autocomplete="off" />
+        <button id="rotaBtn">Rota Bul</button>
+      </div>
+    </div>
+    <div id="rotaSonuc"></div>
+  </section>
+
+  <section id="tab-durak" class="gizli">
+    <div class="row">
+      <input id="durakKod" type="text" placeholder="Durak kodu veya adı (ör: 209081)" autocomplete="off" />
+      <button id="durakBtn">Sorgula</button>
+    </div>
+    <div id="durakSonuc"></div>
+  </section>
+
+  <section id="tab-durak-detay" class="gizli">
+    <div id="durakDetayIcerik"></div>
+  </section>
+
+  <section id="tab-hat" class="gizli">
+    <div class="row">
+      <input id="hatKod" type="text" placeholder="Hat kodu (ör: KM17)" autocomplete="off" />
+      <button id="hatBtn">Sorgula</button>
+    </div>
+    <div id="hatSonuc"></div>
+  </section>
+
+  <section id="tab-filo" class="gizli">
+    <div class="row">
+      <input id="filoKod" type="text" placeholder="Hat kodu (ör: KM11)" autocomplete="off" />
+      <button id="filoBtn">Getir</button>
+    </div>
+    <div id="filoSonuc"></div>
+  </section>
+
+  <section id="tab-arac" class="gizli">
+    <div class="row">
+      <input id="aracKod" type="text" placeholder="Plaka (34 ABC 123) veya Kapı Kodu (M-1234)" autocomplete="off" />
+      <button id="aracBtn">Ara</button>
+    </div>
+    <div id="aracSonuc"></div>
+  </section>
+
+  <section id="tab-duyuru" class="gizli">
+    <div class="row">
+      <button id="duyuruBtn">Yenile</button>
+      <span class="dim2" id="duyuruTs" style="align-self:center"></span>
+    </div>
+    <div id="duyuruSonuc"></div>
+  </section>
+
+  <section id="tab-arsiv" class="gizli">
+    <div class="row">
+      <label>Tarih:</label>
+      <input id="arsivTarih" type="date" />
+      <input id="arsivHat" type="text" placeholder="Hat (opsiyonel)" style="max-width:180px;flex:0" />
+      <button id="arsivBtn">Getir</button>
+    </div>
+    <div class="row" style="gap:6px">
+      <button class="chip hizli-arsiv" data-gun="0">Bugün</button>
+      <button class="chip hizli-arsiv" data-gun="1">Dün</button>
+      <button class="chip hizli-arsiv" data-gun="2">2 gün önce</button>
+      <button class="chip hizli-arsiv" data-gun="7">1 hafta önce</button>
+    </div>
+    <div id="arsivSonuc"></div>
+  </section>
+
+  <section id="tab-populer" class="gizli">
+    <div class="row">
+      <label>Tarih:</label>
+      <input id="populerTarih" type="date" />
+      <input id="populerLimit" type="number" value="50" min="1" max="100" style="max-width:100px;flex:0" title="Gösterilecek hat sayısı" />
+      <button id="populerBtn">Getir</button>
+    </div>
+    <div class="row" style="gap:6px">
+      <button class="chip hizli-populer" data-gun="1">Dün</button>
+      <button class="chip hizli-populer" data-gun="2">2 gün önce</button>
+      <button class="chip hizli-populer" data-gun="7">1 hafta önce</button>
+      <button class="chip hizli-populer" data-gun="30">1 ay önce</button>
+    </div>
+    <div id="populerSonuc"></div>
+  </section>
+
+  <section id="tab-ai" class="gizli">
+    <div class="card">
+      <div class="ai-header">
+        <div class="ai-dot" id="aiDot"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px">AI Asistan</div>
+          <div class="dim2" id="aiDurum">Durum kontrol ediliyor...</div>
+        </div>
+        <button class="chip" id="aiTemizleBtn" type="button">Temizle</button>
+      </div>
+      <div class="ai-chat" id="aiChat">
+        <div class="ai-msg ai-msg-asistan">
+          <div class="ai-balon">
+            Merhaba! İETT hatları, sefer saatleri, duraklar ve canlı araçlar hakkında soru sorabilirsin.
+            Örnek: <b>"KM11 kaçta kalkıyor?"</b> · <b>"209081 durağına ne geliyor?"</b> · <b>"C-358 nerede?"</b>
+          </div>
+        </div>
+      </div>
+      <div class="ai-input-row">
+        <input id="aiInput" type="text" placeholder="Sorunuzu yazın..." autocomplete="off" />
+        <button id="aiGonderBtn" type="button">Gönder</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-ic">
+   <div class="footer-telif">
+  © 2026 <span class="footer-marka">kactakalkar</span>.
+  Bağımsız açık kaynak projesi. İETT/İBB resmi hizmeti değildir.
+  </div>
+    <div class="footer-linkler">
+      <a href="/privacy.html">Gizlilik Politikası</a>
+      <span class="footer-ayrac">·</span>
+      <a href="/terms.html">Kullanım Koşulları</a>
+    </div>
+  </div>
+</footer>
+
+<div class="pwa-banner gizli" id="pwaBanner">
+  <div class="pwa-banner-ic">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+    </svg>
+  </div>
+  <div class="pwa-banner-metin">
+    <b>Uygulamayı yükle</b>
+    <span>Ana ekrana ekle, çevrimdışı çalışsın</span>
+  </div>
+  <button class="pwa-yukle" id="pwaYukleBtn">Yükle</button>
+  <button class="pwa-kapat" id="pwaKapatBtn" aria-label="Kapat">×</button>
+</div>
+
+<nav class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" data-tab="home">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span>
+    <span>Ana</span>
+  </div>
+  <div class="nav-item" data-tab="yolculuk">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
+    <span>Yolculuk</span>
+  </div>
+  <div class="nav-item" data-tab="arac">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="14" height="12" rx="2"/><path d="M5 13h14"/><circle cx="8" cy="20" r="1.4"/><circle cx="16" cy="20" r="1.4"/></svg></span>
+    <span>Araç</span>
+  </div>
+  <div class="nav-item" data-tab="duyuru">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 16V11a6 6 0 1 0-12 0v5l-2 3h16z"/><path d="M10 22a2 2 0 0 0 4 0"/></svg></span>
+    <span>Duyuru</span>
+  </div>
+  <div class="nav-item" data-tab="ai">
+    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="12" rx="2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M12 3v4"/><path d="M9 19v2M15 19v2"/></svg></span>
+    <span>AI</span>
+  </div>
+</nav>
+
+<script src="app.js?v=107"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('[SW] Kayıtlı:', reg.scope))
+      .catch(err => console.warn('[SW] Hata:', err));
+  });
+}
+</script>
+</body>
+</html>

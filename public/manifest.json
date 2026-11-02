@@ -1,0 +1,57 @@
+{
+  "name": "kactakalkar",
+  "short_name": "kactakalkar",
+  "description": "İstanbul toplu taşıma için canlı veri, rota planlayıcı, sefer saatleri ve duraklar",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0d14",
+  "theme_color": "#0a0d14",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": ["travel", "navigation", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Rota Oluştur",
+      "short_name": "Rota",
+      "description": "Nereden nereye gideceğinizi planlayın",
+      "url": "/?tab=rota",
+      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Durak Sorgula",
+      "short_name": "Durak",
+      "description": "Durağa gelen otobüsleri görün",
+      "url": "/?tab=durak",
+      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Hat Detayı",
+      "short_name": "Hat",
+      "description": "Hat sefer saatleri ve güzergahı",
+      "url": "/?tab=hat",
+      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Canlı Filo",
+      "short_name": "Filo",
+      "description": "Hattaki aktif araçları haritada görün",
+      "url": "/?tab=filo",
+      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}

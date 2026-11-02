@@ -1,0 +1,36 @@
+{
+  "name": "kactakalkarjs",
+  "version": "1.0.0",
+  "description": "İETT Genel Panel — CLI + Web",
+  "main": "dashboard.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node dashboard.js",
+    "web": "node server.js",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.5",
+    "@inquirer/prompts": "^5.0.0",
+    "axios": "^1.21.0",
+    "axios-cookiejar-support": "^5.0.0",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.7.1",
+    "hono": "^4.13.16",
+    "tough-cookie": "^4.1.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "wrangler": "^4.156.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261023.1": true
+  }
+}
