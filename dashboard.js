@@ -70,13 +70,27 @@ function extractSoapResult(xml, method) { const re = new RegExp(`<(?:\\w+:)?${me
 
 async function callSoap(url, method, params) {
   const env = buildSoapEnvelope(method, params);
+  const proxyBase = 'https://kactakalkar-proxy.fth25.workers.dev'; 
+  const proxyUrl = `${proxyBase}/?url=${encodeURIComponent(url)}`;
+
   try {
-    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/xml; charset=utf-8', 'SOAPAction': `"${TEMPURI_NS}${method}"`, 'User-Agent': UA }, body: env });
+    const res = await fetch(proxyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/xml; charset=utf-8',
+        'SOAPAction': `"${TEMPURI_NS}${method}"`,
+        'User-Agent': UA,
+      },
+      body: env,
+    });
     if (!res.ok) return null;
     const xml = await res.text();
-    const fault = soapFault(xml); if (fault) return null;
+    const fault = soapFault(xml);
+    if (fault) return null;
     return extractSoapResult(xml, method);
-  } catch (e) { return null; }
+  } catch (e) {
+    return null;
+  }
 }
 
 async function getJson(url, method, params) {
