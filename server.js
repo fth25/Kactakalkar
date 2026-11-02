@@ -2,7 +2,7 @@
 
 const { Hono } = require('hono');
 const iett = require('./dashboard.js');
-const ai = require('./ai');
+const ai = require('./ai/index.js');
 const aiBilgi = require('./ai/bilgi.js');
 
 const app = new Hono();
@@ -10,12 +10,7 @@ const app = new Hono();
 app.use('/*', async (c, next) => {
   if (c.req.path.startsWith('/api')) return await next();
   if (c.env && c.env.ASSETS) return c.env.ASSETS.fetch(c.req.raw);
-  try {
-    const { serveStatic } = require('@hono/node-server/serve-static');
-    return await serveStatic({ root: './public' })(c, next);
-  } catch (e) {
-    return c.text('Not found', 404);
-  }
+  return c.text('Not found', 404);
 });
 
 class CookieManager {
@@ -454,5 +449,4 @@ app.get('/api/resmi-rota', async (c) => {
   } catch (error) { return c.json({ error: 'İETT rota servisine ulaşılamadı.' }, 500); }
 });
 
-
-module.exports = app;
+export default app;

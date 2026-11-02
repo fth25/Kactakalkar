@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node dashboard.js",
-    "web": "node server.js",
+    "web": "node dev.js",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy"
   },
